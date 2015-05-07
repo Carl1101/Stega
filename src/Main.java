@@ -17,7 +17,7 @@ public class Main {
 		File dataFile = new File(JOptionPane.showInputDialog(null,"Please enter the data file name with extention"));
 		//File stegaImageFile = new File(JOptionPane.showInputDialog(null,"Please enter the output file name with extention"));
 		
-		Steganography steg = new Steganography(dataType, new PPMImage(keyImage), fileToBits(dataFile));
+		Hider h = new Hider(dataType, new PPMImage(keyImage), fileToBits(dataFile));
 		
 	}
 	

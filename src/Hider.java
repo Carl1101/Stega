@@ -1,15 +1,15 @@
 import java.io.File;
 import java.util.ArrayList;
 
-public class Steganography {
+public class Hider {
 	private int dataType;
 	private PPMImage key;
 	private ArrayList<Integer> message;
 
 	@SuppressWarnings("unused")
-	private Steganography() {}
+	private Hider() {}
 
-	public Steganography(int dataType, PPMImage key ,ArrayList<Integer> message) {
+	public Hider(int dataType, PPMImage key ,ArrayList<Integer> message) {
 		setDataType(dataType);
 		setKey(key);
 		setMessage(message);
