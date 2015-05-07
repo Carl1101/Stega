@@ -36,4 +36,10 @@ public class Pixel {
 	public Color getColor() {
 		return new Color(red, green, blue);
 	}
+
+	@Override
+	public String toString() {
+		return "Pixel [red=" + red + ", green=" + green + ", blue=" + blue
+				+ "]";
+	}
 }
