@@ -24,11 +24,19 @@ public class ImageConverter {
                 && getFormats().contains(getFileExtensionFromPath(inputFilePath))) {
 
             String outputPath = getOutputPathFromInputPath(inputFilePath, format);
+            String convertPath = "";
+            
+            if (System.getProperty("os.name").equals("Linux"))
+            {
+            convertPath = "/usr/bin/convert";
+            } else {
+            convertPath = "/usr/local/bin/convert";
+            }
 
             if (format.equals("ppm")) {
-                executeCommand("/usr/local/bin/convert -compress none " + inputFilePath + " " + getOutputPathFromInputPath(inputFilePath, format));
+            executeCommand(convertPath + " -compress none " + inputFilePath + " " + getOutputPathFromInputPath(inputFilePath, format));
             } else {
-                executeCommand("/usr/local/bin/convert " + inputFilePath + " " + getOutputPathFromInputPath(inputFilePath, format));
+            executeCommand(convertPath + " " + inputFilePath + " " + getOutputPathFromInputPath(inputFilePath, format));
             }
             
             return outputPath;

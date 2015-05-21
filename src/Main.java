@@ -2,7 +2,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -10,8 +9,6 @@ import steganographer.Stega;
 import imageconverter.ImageConverter;
 
 public class Main {
-    
-    static Scanner scan = new Scanner(System.in);
     
     public static void main(String[] args) throws IOException {
     	while(true){
@@ -106,6 +103,7 @@ public class Main {
     	File f2 = new File(JOptionPane.showInputDialog(null,"Please enter stego image"));        
         
         Stega steg = new Stega(f);
+        // System.out.println("Hidden Message: " + steg.reveal(f2, "text"));
         JOptionPane.showMessageDialog(null, "Hidden Message: " + steg.reveal(f2, "text"));
     }
     
