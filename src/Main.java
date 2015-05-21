@@ -1,47 +1,129 @@
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Scanner;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import steganographer.Stega;
+import imageconverter.ImageConverter;
 
 public class Main {
-
-	public static void main(String[] args) {
-		File keyImage = new File(JOptionPane.showInputDialog(null,"Please enter the key image file name with extention"));
-		Object[] options = {"Text File", "Image File"};
-		int dataType = JOptionPane.showOptionDialog(null, "Please chose message type", 
-				"Message Type",
-				JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, 
-				null, options, options[0]);
-		File dataFile = new File(JOptionPane.showInputDialog(null,"Please enter the data file name with extention"));
-		//File stegaImageFile = new File(JOptionPane.showInputDialog(null,"Please enter the output file name with extention"));
+    
+    static Scanner scan = new Scanner(System.in);
+    
+    public static void main(String[] args) throws IOException {
+    	while(true){
+    		menu();
+    	}
+    }
+    
+    public static void menu(){
+    	Object[] options = {"Hide text", "Hide image", "Reveal text from stegoimage",
+    			"Reveal image from stegoimage", "Convert image",
+    			"Exit"};
+    	
+		String choice = (String) JOptionPane.showInputDialog(null, "Please select an option", 
+				"Options", JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 		
-		Hider h = new Hider(dataType, new PPMImage(keyImage), fileToBits(dataFile));
+		handleOption(choice);
 		
-	}
-	
-	public static ArrayList<Integer> fileToBits(File file) {
-		 ArrayList<Integer> data = new ArrayList<>();
-		
-		try {
-			Scanner reader = new Scanner(file);
-			
-			while(reader.hasNext()){
-				byte[] tmp = reader.nextLine().getBytes();
-		
-				for (int i = 0; i < tmp.length; i++) {
-					String tmp2 = String.format("%8s", Integer.toBinaryString(tmp[i])).replace(" ", "0");
-					//System.out.println(new Character ((char)Integer.parseInt(String.format("%8s", Integer.toBinaryString(tmp[i])).replace(" ", "0"),2)));
-					for (int j = 0; j < tmp2.length(); j++) 
-						data.add(Integer.parseInt(Character.toString(tmp2.charAt(j))));		
-				}
+    }
+    
+    public static void handleOption(String option) {
+       
+            switch(option) {
+                case "Hide text":
+                    hideText();
+                    break;
+                case "Hide image":
+                    hideImage();
+                    break;
+                case "Reveal text from stegoimage":
+                    revealText();
+                    break;
+                case "Reveal image from stegoimage":
+                    revealImage();
+                    break;
+                case "Convert image":
+                    convertImage();
+                    break;
+                case "Exit":
+                    System.exit(0);
+                    break;
+            }
+    }
+    
+    public static void convertImage() {
+  
+        try {
+        	String filename = JOptionPane.showInputDialog(null,"Please enter name of file to convert");
+        	Object[] formats = {"ppm", "jpg", "jpeg", "png", "gif"};
+        	String format = (String) JOptionPane.showInputDialog(null, "Please select a format", 
+    				"Formats", JOptionPane.QUESTION_MESSAGE, null, formats, formats[0]);
+            
+            ImageConverter.convert(filename, format);
+            JOptionPane.showMessageDialog(null, "Succes!!");
+     
+        } catch (Exception ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public static void hideText() {
+    	File f = new File(JOptionPane.showInputDialog(null,"Please enter key image file"));
+        String text = JOptionPane.showInputDialog(null,"Please enter text to hide");
+        
+        Stega steg = new Stega(f);
+        boolean hidden = steg.hide(text.getBytes(), "text");
+        
+        if(hidden) 
+        	JOptionPane.showMessageDialog(null, "Success, stego image: stego-image.ppm");
+         
+    }
+    
+    public static void hideImage() {
+    		
+    		try {
+    			File f = new File(JOptionPane.showInputDialog(null,"Please enter key image file"));
+        		String secret = JOptionPane.showInputDialog(null,"Please enter image file to hide");
+				byte[] image = Files.readAllBytes(Paths.get(secret));
+				
+				Stega steg = new Stega(f);
+	            boolean hidden = steg.hide(image, "image");
+	            
+	            if (hidden)
+	            	JOptionPane.showMessageDialog(null, "Success, stego image: stego-image.ppm");
+	            
+			} catch (IOException ex) {
+				Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
 			}
-			reader.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return data;
-	}
+    }
+    
+     public static void revealText() {
+    	File f = new File(JOptionPane.showInputDialog(null,"Please enter key image file"));
+    	File f2 = new File(JOptionPane.showInputDialog(null,"Please enter stego image"));        
+        
+        Stega steg = new Stega(f);
+        JOptionPane.showMessageDialog(null, "Hidden Message: " + steg.reveal(f2, "text"));
+    }
+    
+    public static void revealImage() {
+    	File f = new File(JOptionPane.showInputDialog(null,"Please enter key image file"));
+    	File f2 = new File(JOptionPane.showInputDialog(null,"Please enter stego image"));         
+        
+        Stega steg = new Stega(f);
+        steg.reveal(f2, "photo");
+        
+        JOptionPane.showMessageDialog(null, "Success, image has been revealed into: revealed-image.ppm");
+    }
+    
+    public static String getFileExtensionFromPath(String path) {
+        int i = path.lastIndexOf('.');
+        if (i > 0) {
+            return path.substring(i + 1);
+        }
+        return "";
+    }
 }
