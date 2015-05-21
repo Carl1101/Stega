@@ -1,2 +1,2 @@
 # Stega-Hider
-Java application that hides an image or message inside an image
+Java application that hides an image or message inside an image and Reveals it.
